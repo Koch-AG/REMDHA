@@ -9,11 +9,12 @@
 #include <stdbool.h>
 #include "sensor.h"
 #include "i2c_master.h"
-
+int gesture = 0;
 
 unsigned char MGC3130receive[] = {};													//array for received data from MGC3130
 
-int gesture = 0x00;																		//variable for received data from PAJ7620
+int PAJ7620receive = 0x00;																//variable for received data from PAJ7620
+int PAJ7620old = 0x00;																	//variable to compare if there is a new Gesture
 unsigned char initRegisterArray[][2] = {												//Array with data for initialization of PAJ7620
 	{0xEF,0x00},
 	{0x32,0x29},
@@ -323,7 +324,7 @@ void PAJ7620ReadGesture(void)
 	i2c_write(0x43);
 	i2c_stop();
 	i2c_start(PAJ7620_ID_READ);
-	gesture = i2c_read_nack();
+	PAJ7620receive = i2c_read_nack();
 	i2c_stop();	
 }
 
@@ -344,5 +345,78 @@ void read_gesture(void)
 		MGC3130ReadGesture();
 	#endif
 }
-	}
+
+int process_gesture(void)
+{
+	#ifdef SENSOR_SELECT == PAJ7620
+		if(PAJ7620receive != PAJ7620old)
+		{
+			switch (PAJ7620receive)
+			{
+				case 0x00 :						//No Gesture
+					gesture = 0;
+					break;
+				case 0x01 :						//Left
+					gesture = LEFT;
+					break;
+				case 0x02 :						//Right
+					gesture = RIGHT;
+					break;
+				case 0x04 :						//Down
+					gesture = DOWN;
+					break;
+				case 0x08 :						//Up
+					gesture = UP;
+					break;
+				case 0x10 :						//Forward
+					gesture = FORWARD;
+					break;
+				case 0x20 :						//Backward
+					gesture = BACKWARD;
+					break;
+				case 0x40 :						//Clockwise
+					gesture = CLOCKWISE;
+					break;
+				case 0x80 :						//Counterclockwise
+					gesture = COUNTERCLOCKWISE;
+					break;
+			}
+			PAJ7620old = PAJ7620receive;
+		}
+	#else if SENSOR_SELECT == MGC3130 
+		switch (MGC3130receive[10])
+		{
+			case 0x00 :						//No Gesture
+				gesture = 0;
+				break;
+			case 0x01 :						//Garbage model
+				gesture = 0;
+				break;
+			case 0x02 :						//Flick West to East
+				gesture = RIGHT;
+				break;
+			case 0x03 :						//Flick East to West
+				gesture = LEFT;
+				break;
+			case 0x04 :						//Flick South to North
+				gesture = DOWN;
+				break;
+			case 0x05 :						//Flick North to South
+				gesture = UP;
+				break;
+			case 0x06 :						//Circle clockwise
+				gesture = CLOCKWISE;
+				break;
+			case 0x07 :						//Circle counterclockwise
+				gesture = COUNTERCLOCKWISE;
+				break;
+			case 0x40 :						//Hold
+				gesture = HOLD;
+				break;
+			case 0x49 :						//Presence
+				gesture = 0;
+				break;
+		}
+	#endif
+	return gesture;
 }
