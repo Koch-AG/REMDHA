@@ -329,26 +329,20 @@ void PAJ7620ReadGesture(void)
 
 void init(void)
 {
-	switch (SENSOR_SELECT)
-	{
-	case 0:
+	#ifdef SENSOR_SELECT == PAJ7620
 		PAJ7620Init();
-		break;
-	case 1:
+	#else if SENSOR_SELECT == MGC3130 
 		MGC3130Init();
-		break;
-	}
+	#endif
 }
 
 void read_gesture(void)
 {
-	switch (SENSOR_SELECT)
-	{
-	case 0:
+	#ifdef SENSOR_SELECT == PAJ7620
 		PAJ7620ReadGesture();
-		break;
-	case 1:
+	#else if SENSOR_SELECT == MGC3130 
 		MGC3130ReadGesture();
-		break;
+	#endif
+}
 	}
 }

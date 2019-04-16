@@ -9,7 +9,10 @@
 #ifndef SENSOR_H_
 #define SENSOR_H_
 
-#define SENSOR_SELECT 1									//choose Sensor 1 -> MGC3130 / 0 -> PAJ7620
+#define PAJ7620			0
+#define MGC3130			1
+#define SENSOR_SELECT	PAJ7620							//choose Sensor 1 -> MGC3130 / 0 -> PAJ7620
+
 
 #define MGC3130_ID			0x42						//I2C ID MGC3130
 #define MGC3130_ID_READ		(MGC3130_ID << 1) + 1
