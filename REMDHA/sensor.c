@@ -253,7 +253,7 @@ bool MGC3130Init(void)
 	return true;
 }
 
-bool MGC3130receiveGesture(void)
+bool MGC3130ReadGesture(void)
 {
 	if(((PINB >> 2) & 1) == 0)
 	{
@@ -325,4 +325,30 @@ void PAJ7620ReadGesture(void)
 	i2c_start(PAJ7620_ID_READ);
 	gesture = i2c_read_nack();
 	i2c_stop();	
+}
+
+void init(void)
+{
+	switch (SENSOR_SELECT)
+	{
+	case 0:
+		PAJ7620Init();
+		break;
+	case 1:
+		MGC3130Init();
+		break;
+	}
+}
+
+void read_gesture(void)
+{
+	switch (SENSOR_SELECT)
+	{
+	case 0:
+		PAJ7620ReadGesture();
+		break;
+	case 1:
+		MGC3130ReadGesture();
+		break;
+	}
 }
