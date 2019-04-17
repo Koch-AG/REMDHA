@@ -11,10 +11,10 @@
 
 #define PAJ7620			0
 #define MGC3130			1
-#define SENSOR_SELECT	MGC3130						//choose Sensor 1 -> MGC3130 / 0 -> PAJ7620
+#define SENSOR_SELECT	PAJ7620				//choose Sensor 1 -> MGC3130 / 0 -> PAJ7620
 
 
-#define RIGHT				1
+#define RIGHT				1					//Define gestures
 #define LEFT				2
 #define DOWN				3
 #define UP					4
@@ -32,7 +32,7 @@
 #define PAJ7620_ID_READ		(PAJ7620_ID << 1) + 1
 #define PAJ7620_ID_WRITE	(PAJ7620_ID << 1) + 0
 
-
+void COUNTER0Init(void);
 
 //MGC3130//////////////////////////////////////////////////////////////////////////////////////////
 bool MGC3130Init(void);									//initialize MGC3130

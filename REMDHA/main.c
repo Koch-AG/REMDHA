@@ -12,16 +12,16 @@
 #include "i2c_master.h"
 #include "sensor.h"
 
-
-
-
+ISR (TIMER0_COMPA_vect)    // Timer1 ISR
+{
+	read_gesture();
+}
 
 int main(void)
 {
 	init();
     while (1) 
     {
-		read_gesture();
     }
 }
 

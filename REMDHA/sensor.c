@@ -238,6 +238,21 @@ unsigned char initRegisterArray[][2] = {												//Array with data for initia
 };
 #define INIT_REG_ARRAY_SIZE (sizeof(initRegisterArray)/sizeof(initRegisterArray[0]))	//read out size of Array
 
+void COUNTER0Init(void)
+{
+	TCNT0 = 0x00;		//set value of counter 0
+	OCR0B = 0x00;		//set value for Output Compare Register B
+	OCR0A = 0x9C;		//set value for Output Compare Register A
+	TCCR0B = 0x04;		//clock select
+	TCCR0A = 0x02;		//CTC mode select
+	TIMSK0 = 0x02;		//output compare match interrupt enable
+	TIFR0 = 0x00;		
+	GTCCR = 0x00;
+	
+	//global Interrupt enable
+	sei();
+}
+
 bool MGC3130Init(void)
 {
 	DDRB = 0x00;
@@ -335,6 +350,7 @@ void init(void)
 	#elif SENSOR_SELECT == MGC3130 
 		MGC3130Init();
 	#endif
+	COUNTER0Init();
 }
 
 void read_gesture(void)
@@ -349,8 +365,6 @@ void read_gesture(void)
 int process_gesture(void)
 {
 	#if SENSOR_SELECT == PAJ7620
-		if(PAJ7620receive != PAJ7620old)
-		{
 			switch (PAJ7620receive)
 			{
 				case 0x00 :						//No Gesture
@@ -381,8 +395,6 @@ int process_gesture(void)
 					gesture = COUNTERCLOCKWISE;
 					break;
 			}
-			PAJ7620old = PAJ7620receive;
-		}
 	#elif SENSOR_SELECT == MGC3130 
 		switch (MGC3130receive[10])
 		{
