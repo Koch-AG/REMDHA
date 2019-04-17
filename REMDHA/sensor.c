@@ -330,25 +330,25 @@ void PAJ7620ReadGesture(void)
 
 void init(void)
 {
-	#ifdef SENSOR_SELECT == PAJ7620
+	#if SENSOR_SELECT == PAJ7620
 		PAJ7620Init();
-	#else if SENSOR_SELECT == MGC3130 
+	#elif SENSOR_SELECT == MGC3130 
 		MGC3130Init();
 	#endif
 }
 
 void read_gesture(void)
 {
-	#ifdef SENSOR_SELECT == PAJ7620
+	#if SENSOR_SELECT == PAJ7620
 		PAJ7620ReadGesture();
-	#else if SENSOR_SELECT == MGC3130 
+	#elif SENSOR_SELECT == MGC3130 
 		MGC3130ReadGesture();
 	#endif
 }
 
 int process_gesture(void)
 {
-	#ifdef SENSOR_SELECT == PAJ7620
+	#if SENSOR_SELECT == PAJ7620
 		if(PAJ7620receive != PAJ7620old)
 		{
 			switch (PAJ7620receive)
@@ -383,7 +383,7 @@ int process_gesture(void)
 			}
 			PAJ7620old = PAJ7620receive;
 		}
-	#else if SENSOR_SELECT == MGC3130 
+	#elif SENSOR_SELECT == MGC3130 
 		switch (MGC3130receive[10])
 		{
 			case 0x00 :						//No Gesture

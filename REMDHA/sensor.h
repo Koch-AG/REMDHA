@@ -11,7 +11,7 @@
 
 #define PAJ7620			0
 #define MGC3130			1
-#define SENSOR_SELECT	PAJ7620							//choose Sensor 1 -> MGC3130 / 0 -> PAJ7620
+#define SENSOR_SELECT	MGC3130						//choose Sensor 1 -> MGC3130 / 0 -> PAJ7620
 
 
 #define RIGHT				1
