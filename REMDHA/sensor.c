@@ -411,10 +411,10 @@ int process_gesture(void)
 				gesture = LEFT;
 				break;
 			case 0x04 :						//Flick South to North
-				gesture = DOWN;
+				gesture = UP;
 				break;
 			case 0x05 :						//Flick North to South
-				gesture = UP;
+				gesture = DOWN;
 				break;
 			case 0x06 :						//Circle clockwise
 				gesture = CLOCKWISE;
