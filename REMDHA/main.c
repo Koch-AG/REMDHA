@@ -11,15 +11,29 @@
 #include <stdbool.h>
 #include "i2c_master.h"
 #include "sensor.h"
+int pressed = 0;
 
 ISR (TIMER0_COMPA_vect)    // Timer1 ISR
 {
 	read_gesture();
+	if (((PORTD & 0x01)||(PORTD & 0x02)||(PORTC & 0x02)||(PORTC & 0x04)||(PORTC & 0x08)) == 1)
+	{
+		pressed++;
+	}
+	if (pressed == 40)		//200ms
+	{
+		PORTC &= ~0x0E;
+		PORTD &= ~0x03;
+		pressed = 0;	
+	}
 }
 
 int main(void)
 {
 	init();
+	DDRD = 0xC7;		//set Data Direction Register for output pins
+	DDRC = 0x0F;
+	
     while (1) 
     {
     }

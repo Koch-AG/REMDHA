@@ -14,7 +14,7 @@
 #define SENSOR_SELECT	PAJ7620				//choose Sensor 1 -> MGC3130 / 0 -> PAJ7620
 
 
-#define RIGHT				1					//Define gestures
+#define RIGHT				1							//Define gestures
 #define LEFT				2
 #define DOWN				3
 #define UP					4
@@ -23,6 +23,12 @@
 #define HOLD				7
 #define FORWARD				8
 #define BACKWARD			9
+
+#define RUFTON				PORTD |= 1					//Define outputs
+#define FUNKTION			PORTD |= (1 << 1)
+#define TOE					PORTC |= (1 << 1)
+#define SPRECHEN			PORTC |= (1 << 2)
+#define LICHT				PORTC |= (1 << 3)
 
 #define MGC3130_ID			0x42						//I2C ID MGC3130
 #define MGC3130_ID_READ		(MGC3130_ID << 1) + 1
