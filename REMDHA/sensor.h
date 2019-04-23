@@ -24,11 +24,22 @@
 #define FORWARD				8
 #define BACKWARD			9
 
+#define LED1_ON				PORTD |= (1 << 6)
+#define LED1_OFF			PORTD &= ~(1 << 6)
+#define LED2_ON				PORTD |= (1 << 7)
+#define LED2_OFF			PORTD &= ~(1 << 7)
+
 #define RUFTON				PORTD |= 1					//Define outputs
 #define FUNKTION			PORTD |= (1 << 1)
 #define TOE					PORTC |= (1 << 1)
 #define SPRECHEN			PORTC |= (1 << 2)
 #define LICHT				PORTC |= (1 << 3)
+
+#define PIN_A_ON			PORTD |= (1 << 2)			//encoder pins
+#define PIN_A_OFF			PORTD &= ~(1 << 2)
+#define PIN_B_ON			PORTC |= (1 << 0)
+#define PIN_B_OFF			PORTC &= ~(1 << 0)
+
 
 #define MGC3130_ID			0x42						//I2C ID MGC3130
 #define MGC3130_ID_READ		(MGC3130_ID << 1) + 1
@@ -52,5 +63,7 @@ void PAJ7620ReadGesture (void);							//read gesture
 void init(void);
 void read_gesture(void);
 int process_gesture(void);
+
+int encoder(int volume);
 
 #endif /* SENSOR_H_ */

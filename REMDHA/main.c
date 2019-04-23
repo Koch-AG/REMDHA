@@ -12,8 +12,10 @@
 #include "i2c_master.h"
 #include "sensor.h"
 int pressed = 0;
+int volume = 0;
+int volumedelay = 0;
 
-ISR (TIMER0_COMPA_vect)    // Timer1 ISR
+ISR (TIMER0_COMPA_vect)    // Timer1 ISR (5ms)
 {
 	read_gesture();
 	if (((PORTD & 0x01)||(PORTD & 0x02)||(PORTC & 0x02)||(PORTC & 0x04)||(PORTC & 0x08)) == 1)
@@ -25,6 +27,15 @@ ISR (TIMER0_COMPA_vect)    // Timer1 ISR
 		PORTC &= ~0x0E;
 		PORTD &= ~0x03;
 		pressed = 0;	
+	}
+	if(volumedelay == 40)
+	{
+		volume = encoder(volume);
+		volumedelay = 0;
+	}
+	else
+	{
+		volumedelay++;
 	}
 }
 

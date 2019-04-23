@@ -10,6 +10,7 @@
 #include "sensor.h"
 #include "i2c_master.h"
 int gesture = 0;
+int volumestate = 0;
 
 unsigned char MGC3130receive[] = {};													//array for received data from MGC3130
 
@@ -431,4 +432,96 @@ int process_gesture(void)
 		}
 	#endif
 	return gesture;
+
+int encoder(int volume)
+{
+	if (volume == 1)			//volume up
+	{
+		switch (volumestate)
+		{
+			case 0:
+				PIN_A_ON;
+				PIN_B_ON;
+				volumestate = 1;
+				break;
+			case 1:
+				PIN_A_OFF;
+				volumestate = 2;
+				break;
+			case 2:
+				PIN_B_OFF;
+				volumestate = 3;
+				break;
+			case 3:
+				PIN_A_ON;
+				volumestate = 4;
+				break;
+			case 4:
+				PIN_B_ON;
+				volumestate = 5;
+				break;
+			case 5:
+				PIN_A_OFF;
+				volumestate = 6;
+				break;
+			case 6:
+				PIN_B_OFF;
+				volumestate = 7;
+				break;
+			case 7:
+				PIN_A_ON;
+				volumestate = 8;
+				break;
+			case 8:
+				PIN_B_ON;
+				volumestate = 0;
+				volume = 0;
+				break;
+		}
+	}
+	else if (volume == 2)		//volume down
+	{
+		switch (volumestate)
+		{
+			case 0:
+				PIN_A_ON;
+				PIN_B_ON;
+				volumestate = 1;
+				break;
+			case 1:
+				PIN_B_OFF;
+				volumestate = 2;
+				break;
+			case 2:
+				PIN_A_OFF;
+				volumestate = 3;
+				break;
+			case 3:
+				PIN_B_ON;
+				volumestate = 4;
+				break;
+			case 4:
+				PIN_A_ON;
+				volumestate = 5;
+				break;
+			case 5:
+				PIN_B_OFF;
+				volumestate = 6;
+				break;
+			case 6:
+				PIN_A_OFF;
+				volumestate = 7;
+				break;
+			case 7:
+				PIN_B_ON;
+				volumestate = 8;
+				break;
+			case 8:
+				PIN_A_ON;
+				volumestate = 0;
+				volume = 0;
+				break;
+		}
+	}
+	return volume;
 }
