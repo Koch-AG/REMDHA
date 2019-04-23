@@ -28,6 +28,7 @@ ISR (TIMER0_COMPA_vect)    // Timer1 ISR (5ms)
 		PORTD &= ~0x03;
 		pressed = 0;	
 	}
+	inputdelay();
 	if(volumedelay == 40)
 	{
 		volume = encoder(volume);
@@ -44,7 +45,6 @@ int main(void)
 	init();
 	DDRD = 0xC7;		//set Data Direction Register for output pins
 	DDRC = 0x0F;
-	
     while (1) 
     {
     }

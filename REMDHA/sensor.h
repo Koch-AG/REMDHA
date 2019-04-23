@@ -63,6 +63,7 @@ void PAJ7620ReadGesture (void);							//read gesture
 void init(void);
 void read_gesture(void);
 int process_gesture(void);
+void inputdelay(void); 
 
 int encoder(int volume);
 

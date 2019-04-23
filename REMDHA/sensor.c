@@ -11,6 +11,7 @@
 #include "i2c_master.h"
 int gesture = 0;
 int volumestate = 0;
+volatile int gesturedelay = 0;
 
 unsigned char MGC3130receive[] = {};													//array for received data from MGC3130
 
@@ -366,36 +367,36 @@ void read_gesture(void)
 int process_gesture(void)
 {
 	#if SENSOR_SELECT == PAJ7620
-			switch (PAJ7620receive)
-			{
-				case 0x00 :						//No Gesture
-					gesture = 0;
-					break;
-				case 0x01 :						//Left
-					gesture = LEFT;
-					break;
-				case 0x02 :						//Right
-					gesture = RIGHT;
-					break;
-				case 0x04 :						//Down
-					gesture = DOWN;
-					break;
-				case 0x08 :						//Up
-					gesture = UP;
-					break;
-				case 0x10 :						//Forward
-					gesture = FORWARD;
-					break;
-				case 0x20 :						//Backward
-					gesture = BACKWARD;
-					break;
-				case 0x40 :						//Clockwise
-					gesture = CLOCKWISE;
-					break;
-				case 0x80 :						//Counterclockwise
-					gesture = COUNTERCLOCKWISE;
-					break;
-			}
+		switch (PAJ7620receive)
+		{
+			case 0x00 :						//No Gesture
+				gesture = 0;
+				break;
+			case 0x01 :						//Left
+				gesture = LEFT;
+				break;
+			case 0x02 :						//Right
+				gesture = RIGHT;
+				break;
+			case 0x04 :						//Down
+				gesture = DOWN;
+				break;
+			case 0x08 :						//Up
+				gesture = UP;
+				break;
+			case 0x10 :						//Forward
+				gesture = FORWARD;
+				break;
+			case 0x20 :						//Backward
+				gesture = BACKWARD;
+				break;
+			case 0x40 :						//Clockwise
+				gesture = CLOCKWISE;
+				break;
+			case 0x80 :						//Counterclockwise
+				gesture = COUNTERCLOCKWISE;
+				break;
+		}
 	#elif SENSOR_SELECT == MGC3130 
 		switch (MGC3130receive[10])
 		{
@@ -431,7 +432,45 @@ int process_gesture(void)
 				break;
 		}
 	#endif
+	gesturedelay = 0;
+	while(gesturedelay < 80 && gesture != 0)
+	{
+		if( SENSOR_SELECT == PAJ7620)
+		{
+			switch (PAJ7620receive)
+			{
+				case 0x40 :						//Clockwise
+					gesture = CLOCKWISE;
+					break;
+				case 0x80 :						//Counterclockwise
+					gesture = COUNTERCLOCKWISE;
+					break;
+			}
+		}
+		else if(SENSOR_SELECT == MGC3130)
+		{
+			switch (MGC3130receive[10])
+			{
+				case 0x06 :						//Circle clockwise
+					gesture = CLOCKWISE;
+					break;
+				case 0x07 :						//Circle counterclockwise
+					gesture = COUNTERCLOCKWISE;
+					break;
+			}
+		}
+	}
 	return gesture;
+}
+
+void inputdelay(void)
+{
+	if(gesturedelay <=80)
+	{
+		gesturedelay++;
+	}
+	
+}
 
 int encoder(int volume)
 {
