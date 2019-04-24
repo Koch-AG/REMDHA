@@ -52,6 +52,31 @@ int main(void)
 	#endif
     while (1) 
     {
+		switch (process_gesture())
+		{
+			case CLOCKWISE:					//clockwise --> volume up
+				volume = 1;
+				break;
+			case COUNTERCLOCKWISE:			//counterclockwise --> volume down
+				volume = 2;
+				break;
+			case UP:						//up --> sonderfunktion
+				FUNKTION;
+				break;
+			case DOWN:						//down --> Ruf-Aus
+				RUFTON;
+				break;
+			case LEFT:						//left --> Licht
+				LICHT;
+				break;
+			case RIGHT:						//right --> Gespräch
+				SPRECHEN;
+				break;
+			case HOLD:						//hold/forward --> Türöffner
+			case FORWARD:
+				TOE;
+				break;
+		}
     }
 }
 
