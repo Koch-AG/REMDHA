@@ -4,19 +4,20 @@
  * Created: 12.04.2019 16:11:33
  *  Author: nbarben
  */ 
-#include <avr/io.h>
+#include <avr/io.h>							//include libraries
 #include <avr/interrupt.h>
 #include <stdbool.h>
 #include "sensor.h"
 #include "i2c_master.h"
-int gesture = 0;
+
+int gesture = 0;							//define variables
 int volumestate = 0;
 volatile int gesturedelay = 0;
 
-unsigned char MGC3130receive[] = {};													//array for received data from MGC3130
+unsigned char MGC3130receive[] = {};		//array for received data from MGC3130
 
-int PAJ7620receive = 0x00;																//variable for received data from PAJ7620
-int PAJ7620old = 0x00;																	//variable to compare if there is a new Gesture
+int PAJ7620receive = 0x00;					//variable for received data from PAJ7620
+int PAJ7620old = 0x00;						//variable to compare if there is a new Gesture
 unsigned char initRegisterArray[][2] = {												//Array with data for initialization of PAJ7620
 	{0xEF,0x00},
 	{0x32,0x29},
@@ -238,29 +239,27 @@ unsigned char initRegisterArray[][2] = {												//Array with data for initia
 	{0x7D,0x03},
 	{0x7E,0x01},
 };
-#define INIT_REG_ARRAY_SIZE (sizeof(initRegisterArray)/sizeof(initRegisterArray[0]))	//read out size of Array
 
-void COUNTER0Init(void)
+void COUNTER0Init(void)						//initialize COUNTER0
 {
-	TCNT0 = 0x00;		//set value of counter 0
-	OCR0B = 0x00;		//set value for Output Compare Register B
-	OCR0A = 0x9C;		//set value for Output Compare Register A
-	TCCR0B = 0x04;		//clock select
-	TCCR0A = 0x02;		//CTC mode select
-	TIMSK0 = 0x02;		//output compare match interrupt enable
+	TCNT0 = 0x00;							//set value of counter 0
+	OCR0B = 0x00;							//set value for Output Compare Register B
+	OCR0A = 0x9C;							//set value for Output Compare Register A
+	TCCR0B = 0x04;							//clock select
+	TCCR0A = 0x02;							//CTC mode select
+	TIMSK0 = 0x02;							//output compare match interrupt enable
 	TIFR0 = 0x00;		
 	GTCCR = 0x00;
-	
-	//global Interrupt enable
-	sei();
+
+	sei();									//global Interrupt enable
 }
 
-bool MGC3130Init(void)
+bool MGC3130Init(void)						//initialize MGC3130
 {
-	DDRB = 0x00;
+	DDRB = 0x00;							//enable pull up on TS line
 	PORTB = 0x04;
 	int32_t i = 0;
-	while (((PINB >> 2) & 1) == 0)
+	while (((PINB >> 2) & 1) == 0)			//wait for TS line to get high
 	{
 		i++;
 		if(i>=1000) 
@@ -271,26 +270,26 @@ bool MGC3130Init(void)
 	return true;
 }
 
-bool MGC3130ReadGesture(void)
+bool MGC3130ReadGesture(void)				//read gesture from MGC3130
 {
-	if(((PINB >> 2) & 1) == 0)
+	if(((PINB >> 2) & 1) == 0)				//check TS line
 	{
-		DDRB = 0x04;
+		DDRB = 0x04;						//disable pull up on TS line
 		PORTB = 0x00;
-		i2c_start(MGC3130_ID_READ);
-		MGC3130receive[0] = i2c_read_ack();
+		i2c_start(MGC3130_ID_READ);			//send READ address
+		MGC3130receive[0] = i2c_read_ack();	//read first byte
 		
-		for(uint16_t i = 1; i < (MGC3130receive[0]-1); i++)
+		for(uint16_t i = 1; i < (MGC3130receive[0]-1); i++)	//read as many bytes as first byte had as value
 		{
 			MGC3130receive[i] = i2c_read_ack();
 		}
 		MGC3130receive[(MGC3130receive[0]-1)] = i2c_read_nack();
 		
 		i2c_stop();
-		DDRB = 0x00;
+		DDRB = 0x00;						//enable pull up on TS line
 		PORTB = 0x04;
 		int32_t i = 0;
-		while (((PINB >> 2) & 1) == 0)
+		while (((PINB >> 2) & 1) == 0)		//wait for TS line to get high
 		{
 			i++;
 			if(i>=1000) 
@@ -306,14 +305,13 @@ bool MGC3130ReadGesture(void)
 	}
 }
 
-void PAJ7620Init(void)
+void PAJ7620Init(void)						//initialize PAJ7620
 {
 	int i = 0;
 	i2c_start(PAJ7620_ID_WRITE);						//select BANK 0
 	i2c_write(0xEF);
 	i2c_write(0x00);
 	i2c_stop();
-	
 	for (i = 0; i < INIT_REG_ARRAY_SIZE; i++)			//write initialization data
 	{
 		i2c_start(PAJ7620_ID_WRITE);
@@ -335,17 +333,17 @@ void PAJ7620Init(void)
 	i2c_stop();
 }
 
-void PAJ7620ReadGesture(void)
+void PAJ7620ReadGesture(void)				//read gesture from PAJ7620
 {
-	i2c_start(PAJ7620_ID_WRITE);
+	i2c_start(PAJ7620_ID_WRITE);			//write Address for register 0x43
 	i2c_write(0x43);
 	i2c_stop();
-	i2c_start(PAJ7620_ID_READ);
+	i2c_start(PAJ7620_ID_READ);				//read register 0x43
 	PAJ7620receive = i2c_read_nack();
 	i2c_stop();	
 }
 
-void init(void)
+void init(void)								//choose init of selected sensor
 {
 	#if SENSOR_SELECT == PAJ7620
 		PAJ7620Init();
@@ -355,7 +353,7 @@ void init(void)
 	COUNTER0Init();
 }
 
-void read_gesture(void)
+void read_gesture(void)						//choose read function for selected sensor
 {
 	#if SENSOR_SELECT == PAJ7620
 		PAJ7620ReadGesture();
@@ -364,7 +362,7 @@ void read_gesture(void)
 	#endif
 }
 
-int process_gesture(void)
+int process_gesture(void)					//process received data to output right gesture
 {
 	#if SENSOR_SELECT == PAJ7620
 		switch (PAJ7620receive)
@@ -467,7 +465,7 @@ int process_gesture(void)
 	return gesture;
 }
 
-void inputdelay(void)
+void inputdelay(void)						//delay for process_gesture
 {
 	if(gesturedelay <=80)
 	{
@@ -476,9 +474,9 @@ void inputdelay(void)
 	
 }
 
-int encoder(int volume)
+int encoder(int volume)						//sub function for simulating encoder
 {
-	if (volume == 1)			//volume up
+	if (volume == 1)						//volume up
 	{
 		switch (volumestate)
 		{
@@ -522,7 +520,7 @@ int encoder(int volume)
 				break;
 		}
 	}
-	else if (volume == 2)		//volume down
+	else if (volume == 2)					//volume down
 	{
 		switch (volumestate)
 		{
