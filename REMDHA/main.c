@@ -45,6 +45,11 @@ int main(void)
 	init();
 	DDRD = 0xC7;		//set Data Direction Register for output pins
 	DDRC = 0x0F;
+	#if SENSOR_SELECT == PAJ7620
+		LED2_ON;
+	#elif SENSOR_SELECT == MGC3130 
+		LED1_ON;
+	#endif
     while (1) 
     {
     }

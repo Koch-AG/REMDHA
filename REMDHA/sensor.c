@@ -435,8 +435,8 @@ int process_gesture(void)
 	gesturedelay = 0;
 	while(gesturedelay < 80 && gesture != 0)
 	{
-		if( SENSOR_SELECT == PAJ7620)
-		{
+		#if SENSOR_SELECT == PAJ7620
+			LED1_ON;
 			switch (PAJ7620receive)
 			{
 				case 0x40 :						//Clockwise
@@ -446,9 +446,8 @@ int process_gesture(void)
 					gesture = COUNTERCLOCKWISE;
 					break;
 			}
-		}
-		else if(SENSOR_SELECT == MGC3130)
-		{
+		#elif SENSOR_SELECT == MGC3130
+			LED2_ON;
 			switch (MGC3130receive[10])
 			{
 				case 0x06 :						//Circle clockwise
@@ -458,8 +457,13 @@ int process_gesture(void)
 					gesture = COUNTERCLOCKWISE;
 					break;
 			}
-		}
+		#endif
 	}
+	#if SENSOR_SELECT == PAJ7620
+		LED1_OFF;
+	#elif SENSOR_SELECT == MGC3130 
+		LED2_OFF;
+	#endif
 	return gesture;
 }
 
