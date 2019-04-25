@@ -11,6 +11,7 @@
 #include "i2c_master.h"
 
 int gesture = 0;							//define variables
+int gestureold = 0;
 int volumestate = 0;
 volatile int gesturedelay = 0;
 
@@ -396,6 +397,10 @@ int process_gesture(void)					//process received data to output right gesture
 				break;
 		}
 	#elif SENSOR_SELECT == MGC3130 
+		if(MGC3130receive[10] == gestureold)
+		{
+			MGC3130receive[10] = 0;
+		}
 		switch (MGC3130receive[10])
 		{
 			case 0x00 :						//No Gesture
@@ -429,6 +434,7 @@ int process_gesture(void)					//process received data to output right gesture
 				gesture = 0;
 				break;
 		}
+		gestureold = MGC3130receive[10];
 	#endif
 	gesturedelay = 0;
 	while(gesturedelay < 80 && gesture != 0)
@@ -453,6 +459,9 @@ int process_gesture(void)					//process received data to output right gesture
 					break;
 				case 0x07 :						//Circle counterclockwise
 					gesture = COUNTERCLOCKWISE;
+					break;			
+				case 0x40 :						//Hold
+					gesture = HOLD;
 					break;
 			}
 		#endif
