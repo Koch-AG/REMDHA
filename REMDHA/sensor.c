@@ -14,7 +14,7 @@ int gesture = 0;							//define variables
 int volumestate = 0;
 volatile int gesturedelay = 0;
 
-unsigned char MGC3130receive[] = {};		//array for received data from MGC3130
+unsigned char MGC3130receive[256] = {};		//array for received data from MGC3130
 
 int PAJ7620receive = 0x00;					//variable for received data from PAJ7620
 int PAJ7620old = 0x00;						//variable to compare if there is a new Gesture
